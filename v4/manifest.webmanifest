@@ -1,0 +1,9 @@
+{
+ "name": "Warzone Prototype",
+ "short_name": "WZ Proto",
+ "start_url": "./index.html",
+ "display": "fullscreen",
+ "orientation": "landscape",
+ "background_color": "#0b0e11",
+ "theme_color": "#0b0e11"
+}
