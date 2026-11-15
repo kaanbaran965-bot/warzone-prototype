@@ -1,0 +1,47 @@
+OCHRE RIDGE – ASSET-CREDITS & LIZENZEN
+=======================================
+Privater, nicht-kommerzieller Prototyp. Keine Assets von Activision / Call of Duty.
+
+WAFFE + HÄNDE/ARME (assets/models/m4a1.glb, arms_basecolor.webp, arms_normal.webp)
+  Aus dem Open-Source-Projekt "IRONLINE" (github.com/cktang88/3d-fps), das folgende CC BY 4.0-Werke
+  kombiniert, neu geriggt, Herstellermarkierungen entfernt und Texturen konvertiert hat:
+  - "M4A1" von Firewarden – CC BY 4.0
+    https://sketchfab.com/3d-models/m4a1-40d8ef818c7549a896371cbb1f64fec6
+  - "Fps arms" von bumstrum (DJMaesen) – CC BY 4.0
+    https://sketchfab.com/3d-models/fps-arms-9452ce4cddde4110a4fd73e555a8e412
+  - Arm-Rig aus "FPS AK-74m animations" von ccransh – CC BY 4.0
+    https://sketchfab.com/3d-models/fps-ak-74m-animations-94be8385c402474cacd39bc096c6ca14
+  Lizenz: https://creativecommons.org/licenses/by/4.0/
+  Änderungen: Material-Tönung/Metallik angepasst; alle Waffen-/Armbewegungen (ADS, Rückstoß, Nachladen mit
+  Magazin raus/rein + Ladehebel, Sprint-/Taktiksprint-/Rutsch-Posen) sind prozedural (eigener Code) + Zwei-Knochen-IK.
+
+GEGNER, ZIELE, DECKUNG
+  Bots (Kapsel-/Zylinder-Humanoide mit Tarnmuster), Stahl-Silhouetten, Gongs, umgestürzte Baumstämme,
+  Munitionskisten und Deckungsfelsen: prozedural erzeugt (eigener Code, Rinde nutzt die Poly-Haven-Textur unten).
+  Treffer-/Kill-/Stahl-/Vorbeiflug-Sounds: zur Laufzeit synthetisiert (eigener Code).
+
+TEXTUREN (assets/tex2/, assets/tex/) – alle Poly Haven, CC0, verkleinert/neu komprimiert
+  - Gras: "Withered Grass"      https://polyhaven.com/a/withered_grass
+  - Erde/Weg: "Rocky Trail"     https://polyhaven.com/a/rocky_trail
+  - Fels: "Rock Face"           https://polyhaven.com/a/rock_face
+  - Schnee: "Snow 02"           https://polyhaven.com/a/snow_02
+  - Rinde: "Pine Bark"          https://polyhaven.com/a/pine_bark
+  - Makro-Variation: "Gravelly Sand"  https://polyhaven.com/a/gravelly_sand
+  Grashalme, Kiefernzweige, Mündungsfeuer: zur Laufzeit prozedural gemalt (eigener Code).
+  Gelände, Berge, Bäume, Felsen: prozedural generiert (eigener Code).
+
+HIMMEL / HDRI (assets/hdr/)
+  - "Kloofendal 48d Partly Cloudy (Pure Sky)" – Greg Zaal, Poly Haven – CC0
+    https://polyhaven.com/a/kloofendal_48d_partly_cloudy_puresky
+
+SOUNDS (assets/audio/, nach AAC/.m4a konvertiert)
+  - Schüsse + Waffen-Foley (switch, bolt, rack, mag): "The Free Firearm Sound Library" – CC0
+    https://github.com/buddingmonkey/FreeFirearmsSFXLibrary
+  - Schritte, Aufprall-/Stoffgeräusche: Kenney "Impact Sounds" – CC0 – https://kenney.nl
+  - Echo/Hall, Stoffrascheln: zur Laufzeit synthetisiert (eigener Code)
+
+SCHRIFT
+  - Barlow / Barlow Condensed – Jeremy Tribby – SIL Open Font License 1.1 (via @fontsource)
+
+SOFTWARE
+  - three.js (MIT), Vite (MIT), Capacitor (MIT)

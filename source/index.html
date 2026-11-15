@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Ochre Ridge" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="format-detection" content="telephone=no" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="./icon-180.png" />
+  <title>Ochre Ridge – FPS Prototyp</title>
+</head>
+<body>
+  <canvas id="game"></canvas>
+
+  <div id="hud" class="hidden">
+    <div id="dmg-vignette"></div>
+    <div id="dmg-dirs"></div>
+    <div id="crosshair"><i></i><i></i><i></i><i></i></div>
+    <div id="hitmarker"><i></i><i></i><i></i><i></i></div>
+    <div id="score-pop"></div>
+    <div id="score"><b id="score-k">0</b><span>ELIM</span><b id="score-p">0</b><span>PKT</span></div>
+    <div id="killfeed"></div>
+    <div id="toast"></div>
+    <div id="compass"><div id="compass-strip"></div><div id="compass-mark"></div></div>
+    <div id="vitals">
+      <div id="plates"><i><u></u></i><i><u></u></i><i><u></u></i></div>
+      <div id="health"><div id="health-fill"></div></div>
+    </div>
+    <div id="ammo"><span id="ammo-mag">30</span><span id="ammo-res">120</span><div id="ammo-name">M4A1 · AUTO</div></div>
+    <div id="debug" class="hidden"></div>
+    <div id="reload-hint" class="hidden">NACHLADEN</div>
+  </div>
+
+  <div id="touch" class="hidden">
+    <div id="joy-base"><div id="joy-knob"></div><div id="joy-sprint"></div></div>
+    <button class="tbtn" id="btn-fire" data-action="fire" aria-label="Feuer">
+      <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="9"/><path d="M24 6v8M24 34v8M6 24h8M34 24h8"/></svg></button>
+    <button class="tbtn" id="btn-ads" data-action="ads" aria-label="Zielen">
+      <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="12"/><circle cx="24" cy="24" r="2" class="fill"/><path d="M24 8v6M24 34v6M8 24h6M34 24h6"/></svg></button>
+    <button class="tbtn" id="btn-reload" data-action="reload" aria-label="Nachladen">
+      <svg viewBox="0 0 48 48"><path d="M34 17a12 12 0 1 0 2 11"/><path d="M35 9v8h-8"/></svg></button>
+    <button class="tbtn" id="btn-jump" data-action="jump" aria-label="Springen">
+      <svg viewBox="0 0 48 48"><path d="M14 27l10-10 10 10"/><path d="M14 35l10-10 10 10" opacity=".5"/></svg></button>
+    <button class="tbtn" id="btn-crouch" data-action="crouch" aria-label="Ducken">
+      <svg viewBox="0 0 48 48"><path d="M14 17l10 10 10-10"/><path d="M12 35h24"/></svg></button>
+  </div>
+  <button id="btn-menu" class="hidden" aria-label="Einstellungen"><svg viewBox="0 0 48 48"><path d="M14 16h20M14 24h20M14 32h20"/></svg></button>
+
+  <div id="settings" class="hidden">
+    <div class="sheet">
+      <div class="sheet-head"><span>EINSTELLUNGEN</span><button id="settings-close" aria-label="Schließen">✕</button></div>
+      <label class="row"><span>Grafikqualität</span>
+        <select id="set-quality"><option value="low">Niedrig</option><option value="medium">Mittel</option><option value="high">Hoch</option></select></label>
+      <label class="row"><span>Umsehen-Empfindlichkeit</span><input id="set-sens" type="range" min="0.4" max="2.2" step="0.05" /></label>
+      <label class="row"><span>Sichtfeld (FOV)</span><input id="set-fov" type="range" min="80" max="110" step="1" /><em id="fov-val"></em></label>
+      <label class="row"><span>Zielen: Halten statt Umschalten</span><input id="set-adshold" type="checkbox" /></label>
+      <label class="row"><span>Zielhilfe (Touch)</span><input id="set-aa" type="range" min="0" max="1" step="0.05" /><em id="aa-val"></em></label>
+      <label class="row"><span>Automatisch sprinten (Stick ganz nach vorn)</span><input id="set-autosprint" type="checkbox" /></label>
+      <label class="row"><span>Gegner aktiv</span><input id="set-bots" type="checkbox" /></label>
+      <label class="row"><span>Kompass anzeigen</span><input id="set-compass" type="checkbox" /></label>
+      <label class="row"><span>Debug-Overlay (FPS, Status)</span><input id="set-debug" type="checkbox" /></label>
+      <div class="row foot"><button id="settings-resume">WEITER</button><a href="./CREDITS.txt" target="_blank">Credits</a></div>
+      <p class="note">Qualitätsänderung lädt das Spiel neu.</p>
+    </div>
+  </div>
+
+  <div id="death" class="hidden">
+    <div class="d-in">
+      <div class="d-title">AUSGESCHALTET</div>
+      <div class="d-by" id="death-by"></div>
+      <div class="d-stats" id="death-stats"></div>
+      <button id="respawn-btn">WIEDEREINSTIEG <span id="respawn-count"></span></button>
+    </div>
+  </div>
+
+  <div id="rotate" class="hidden"><div>Bitte quer halten</div></div>
+
+  <div id="loader">
+    <div class="panel">
+      <div class="brand">OCHRE RIDGE</div>
+      <div class="sub">Freies Gelände · M4A1 · Gefecht</div>
+      <div id="bar"><div id="bar-fill"></div></div>
+      <p id="load-text">Lade…</p>
+      <button id="start" disabled>SPIELEN</button>
+      <p class="hint" id="hint-touch">Linker Stick: Gehen/Laufen · ganz nach vorn: Sprint · über den Ring hinaus: Taktischer Sprint · rechts wischen: Umsehen · Ducken im Sprint: Slide</p>
+      <p class="hint" id="hint-desk">WASD · Maus · Linksklick Feuer · Rechtsklick Zielen · R Nachladen · Shift Sprint (2× Taktisch) · Alt Gehen · Leertaste Sprung · C Ducken/Slide</p>
+    </div>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

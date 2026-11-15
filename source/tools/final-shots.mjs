@@ -1,0 +1,40 @@
+// node tools/final-shots.mjs [prefix] -- staged screenshot set for the report (headless Chromium, iPhone 14 Pro landscape)
+import { chromium, devices } from 'playwright';
+const prefix = process.argv[2] || 'v3';
+const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
+const page = await (await browser.newContext({ ...devices['iPhone 14 Pro landscape'] })).newPage();
+const errs = []; page.on('pageerror', (e) => errs.push(e.message)); page.on('console', (m) => { if (m.type() === 'error') errs.push(m.text()); });
+await page.goto('http://127.0.0.1:4188/?manual&q=medium');
+await page.waitForFunction(() => window.__game?.ready, null, { timeout: 120000 });
+const shot = async (name, fn, wait = 0) => {
+  const r = await page.evaluate(fn);
+  await page.evaluate(() => window.__game.advance(1, 1 / 60));
+  if (wait) await page.waitForTimeout(wait);
+  await page.screenshot({ path: `screenshots/${prefix}_${name}.png`, timeout: 180000 });
+  console.log('shot', name, r !== undefined ? JSON.stringify(r) : '');
+};
+await shot('01_title', () => { window.__game.sim(30); });
+await page.evaluate(() => window.__game.start());
+const SETUP = `const g=window.__game,p=g.player,T=g.world.terrain,b=g.combat.bots.bots,V=p.pos.constructor;
+const place=(x,z,yaw,pitch=-0.03)=>{p.pos.set(x,T.height(x,z),z);p.vel.set(0,0,0);p.yaw=yaw;p.pitch=pitch;p.crouched=false;p.sliding=false;p.stopSprint();g.setStick(0,0);g.input.fireHeld=false;g.weapon.adsHeld=false;};
+const lookAt=(v)=>{const e=g.camera.position,d=v.clone().sub(e).normalize();p.yaw=Math.atan2(-d.x,-d.z);p.pitch=Math.asin(d.y);};
+const aimFire=(tgt,n)=>{g.input.fireHeld=true;for(let i=0;i<n;i++){const v=tgt();if(!v)break;lookAt(v);g.sim(1);}g.input.fireHeld=false;};`;
+const S = (body) => new Function(SETUP + body);
+await shot('02_hip', S(`place(-30,20,0.12);b.forEach((x,i)=>x.spawnAt(60+i*5,-170,0));g.sim(40);`));
+await shot('03_ads', S(`g.input.press('adsToggle');g.sim(25);`));
+await shot('04_combat', S(`g.weapon.adsHeld=false;place(6,-98,0);b[0].spawnAt(0,-110,0);b[1].spawnAt(9,-114,0);b[2].spawnAt(16,-121,0);
+  for(const x of b){x.alert(p);x.setState('fight');x.ready=0.3;x.sees=true;x.lastSeen.copy(p.pos);}
+  g.combat.graceT=0;g.sim(30);for(const x of b){x.burstLeft=4;x.pauseT=0;x.shotCool=0;}lookAt(b[1].chestWorld(new V()));g.sim(4);aimFire(()=>b[1].dead?null:b[1].chestWorld(new V()),4);
+  return b.map(x=>x.state);`));
+await shot('05_kill', S(`const t=b.find(x=>!x.dead);g.input.press('adsToggle');g.sim(12);aimFire(()=>t.dead?null:t.chestWorld(new V()),90);g.sim(3);
+  return {kills:g.combat.kills,score:g.combat.score,feed:document.getElementById('killfeed').textContent.trim().slice(0,40)};`));
+await shot('06_tacsprint', S(`g.weapon.adsHeld=false;place(-30,30,0.12,-0.05);g.combat.bots.setEnabled(false);g.setStick(0,1);g.sim(35);g.setStick(0,1,true);g.sim(14);return p.state;`));
+await shot('07_slide', S(`p.tacTime=0;p.tactical=false;g.setStick(0,1);g.sim(10);g.input.press('crouchToggle');g.sim(8);return p.state;`));
+await shot('08_crouch', S(`place(-30,22,0.12,-0.04);g.input.press('crouchToggle');g.sim(2);g.setStick(0.2,0.5);g.sim(30);return p.state;`));
+await shot('09_reload', S(`place(-30,20,0.12,-0.04);g.sim(10);g.weapon.mag=0;g.weapon.onAmmo();g.input.press('reload');g.sim(1);while(g.vm.reloadT>=0&&g.vm.reloadT<0.95)g.sim(1,1/60);return g.vm.reloadT;`));
+await shot('10_range', S(`while(g.vm.reloadT>=0)g.sim(1);place(-30,16,0.05,-0.02);g.sim(5);const t=g.combat.targets.items[0];const c=()=>t.parts[0].getWorldPosition(new V());lookAt(c());g.input.press('adsToggle');g.sim(20);aimFire(()=>t.down>0?null:c(),30);g.sim(8);return {score:g.combat.score,down:t.down};`));
+await shot('11_hurt', S(`g.weapon.adsHeld=false;g.sim(15);g.combat.plates=0;g.combat.plateHp=0;g.combat.damagePlayer(66,{x:p.pos.x+8,y:0,z:p.pos.z-6},'Kessler');g.sim(2);return g.combat.health;`));
+await shot('12_death', S(`g.combat.damagePlayer(200,{x:p.pos.x-8,y:0,z:p.pos.z},'Kessler');g.sim(45);`), 1800);
+await shot('13_settings', S(`g.combat.respawn();g.sim(5);g.settings.open();`), 400);
+console.log('errors:', errs.length ? errs.slice(0, 10).join('\n') : 'none');
+await browser.close();

@@ -1,0 +1,9 @@
+[
+  {"name": "01_spawn", "js": "0", "wait": 2500},
+  {"name": "02_field", "js": "(()=>{const g=__game;g.player.yaw=0.4;g.player.pitch=-0.05;})()", "wait": 1500},
+  {"name": "03_ads", "js": "(()=>{const g=__game;g.input.press('adsToggle');})()", "wait": 1500},
+  {"name": "04_fire", "js": "(()=>{const g=__game;g.input.fireHeld=true;})()", "wait": 250, "js2": "0", "wait2": 10},
+  {"name": "05_reload", "js": "(()=>{const g=__game;g.input.fireHeld=false;g.input.press('adsToggle');g.input.press('reload');})()", "wait": 700},
+  {"name": "06_sun", "js": "(()=>{const g=__game;const s=g.world.sunDir;g.player.yaw=Math.atan2(-s.x,-s.z);g.player.pitch=0.2;})()", "wait": 2200},
+  {"name": "07_settings", "js": "(()=>{const g=__game;g.player.yaw=0.12;g.player.pitch=-0.03;const b=document.getElementById('menu-btn')||document.querySelector('[aria-label*=Men],#menu');if(b)b.click();else document.getElementById('settings').classList.remove('hidden');})()", "wait": 600}
+]
